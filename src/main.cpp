@@ -19,7 +19,7 @@ static std::string get_file_contents(std::string path) {
 }
 
 static void usage(char *program) {
-	INFO("usage: grc [FILES] +[ARGUMENT]..");
+	LOG_INFO("usage: grc [FILES] +[ARGUMENT]..");
 	std::cout << "[ARGUMENTS]:"														<< std::endl;
 	std::cout << "  -  toolchain [TOOLCHAIN]"										<< std::endl;
 	std::cout << "  -  output-assembly"												<< std::endl;
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
 	if (argc < 1) {
 		usage(program);
-		ERROR("no arguments provided");
+		LOG_ERROR("no arguments provided");
 		exit(1);
 	}
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
 			} else {
 				usage(program);
-				ERROR("invalid flag `{0}`", arg);
+				LOG_ERROR("invalid flag `{0}`", arg);
 				exit(1);
 			}
 		} else {

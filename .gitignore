@@ -1,7 +1,6 @@
-.vs/
+.vscode/
 
-bin/
-bin/int/
+build/
 
 **.vcxproj
 **.vcxproj.filters

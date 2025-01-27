@@ -17,9 +17,6 @@ namespace GRC {
 	}
 
 	PositionWrapper<Token> Tokenizer::advance_with(PositionWrapper<Token> tok) {
-		size_t row = this->row;
-		size_t col = this->col;
-
 		this->advance();
 
 		return tok;
@@ -88,7 +85,7 @@ namespace GRC {
 					}, this->row, this->col));
 				default:
 					{
-						ERROR("invalid token `{0}`", this->ch);
+						LOG_ERROR("invalid token `{0}`", this->ch);
 						exit(1);
 					} break;
 			}
