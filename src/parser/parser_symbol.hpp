@@ -12,7 +12,7 @@ namespace GRC {
 
         void parse_functions();
     private:
-        inline void careless_eat();
+        void careless_eat();
         void eat(enum TokenType type);
     private:
         SymbolTable &table;

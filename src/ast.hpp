@@ -20,6 +20,9 @@ namespace GRC {
         NodeList params;
         NodeList body;
     public:
+        Function(const std::string &name, const std::string &type)
+            : name(name), type(type) {}
+
         std::string to_string() const override {
             std::string str = "Function:\n\tName: " + this->name + "\n\tType: "
                                 + this->type + "\n\tParams:";

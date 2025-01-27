@@ -72,13 +72,12 @@ int main(int argc, char **argv) {
 
 	for (auto &file : files) {
 		Tokenizer tokenizer(get_file_contents(file));
-		PositionWrapper<Token> token = tokenizer.fetch_token();
+		SymbolTable symbol_table;
+		ParserSymbol symbol_parser(symbol_table, tokenizer);
+		symbol_parser.parse_functions();
 
-		while (token.value.type != END_OF_FILE) {
-			std::cout << "token: `" << token.value.value << "`, type: "
-				<< token.value.type << ", row: " << token.row << ", col: " << token.col
-				<< std::endl;
-			token = tokenizer.fetch_token();
+		for (auto &func : symbol_table.functions) {
+			std::cout << func.second.to_string() << std::endl;
 		}
 	}
 }

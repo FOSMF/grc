@@ -2,9 +2,11 @@
 
 #include "../log.hpp"
 
+#include <iostream>
+
 namespace GRC {
 
-    inline void ParserSymbol::careless_eat() {
+    void ParserSymbol::careless_eat() {
         this->current_token = this->tokenizer.fetch_token();
     }
     
@@ -20,8 +22,8 @@ namespace GRC {
 
     void ParserSymbol::parse_functions() {
         while (this->current_token.value.type != END_OF_FILE) {
-            if (this->current_token.value.type != IDENTIFIER
-                && this->current_token.value.value != "fn") {
+            if (this->current_token.value.type == IDENTIFIER
+                && this->current_token.value.value == "fn") {
                 this->eat(TokenType::IDENTIFIER);
 
                 std::string name = this->current_token.value.value;
@@ -34,8 +36,7 @@ namespace GRC {
                 std::string type = this->current_token.value.value;
                 this->eat(TokenType::IDENTIFIER);
 
-                this->table.functions.insert({ name, Function {}
-                });
+                this->table.functions.insert({ name, Function(name, type) });
             } else {
                 this->careless_eat();
             }
