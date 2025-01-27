@@ -3,8 +3,11 @@
 #include <sstream>
 #include <vector>
 
-#include "tokenizer.h"
-#include "log.h"
+#include "log.hpp"
+
+#include "tokenizer.hpp"
+#include "parser/parser_symbol.hpp"
+#include "parser/parser_ast.hpp"
 
 using namespace GRC;
 
@@ -19,10 +22,11 @@ static std::string get_file_contents(std::string path) {
 }
 
 static void usage(char *program) {
-	LOG_INFO("usage: grc [FILES] +[ARGUMENT]..");
+	LOG_INFO("usage: {0} [FILES] +[ARGUMENT]..", program);
 	std::cout << "[ARGUMENTS]:"														<< std::endl;
 	std::cout << "  -  toolchain [TOOLCHAIN]"										<< std::endl;
-	std::cout << "  -  output-assembly"												<< std::endl;
+	std::cout << "  -  output [OUTPUT]"												<< std::endl;
+	std::cout << "  -  assembly"													<< std::endl;
 	std::cout << "[TOOLCHAINS]:"													<< std::endl;
 	std::cout << "  -  x86_64-unknown-gcc = links object files with standard gcc"	<< std::endl;
 }
@@ -52,7 +56,9 @@ int main(int argc, char **argv) {
 		if (arg.starts_with('+')) {
 			if (arg == "+toolchain") {
 
-			} else if (arg == "+show-assembly") {
+			} else if (arg == "+output") {
+				std::string out = shift(argc, &argv);
+			} else if (arg == "+assembly") {
 
 			} else {
 				usage(program);

@@ -1,8 +1,8 @@
-#include "tokenizer.h"
+#include "tokenizer.hpp"
 
 #include <iostream>
 
-#include "log.h"
+#include "log.hpp"
 
 namespace GRC {
 
