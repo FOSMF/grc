@@ -63,8 +63,6 @@ namespace GRC {
 
         if (this->current_token.unwrap().type == END_OF_FILE) {
             this->error("function scope does not end, found EOF instead");
-        } else {
-            this->advance();
         }
     }
 
