@@ -63,6 +63,8 @@ namespace GRC {
 			: source(src), ch(src[0]) {}
 	
 		PositionWrapper<Token> fetch_token();
+	public:
+		inline std::string &get_source() { return this->source; }
 	private:
 		void advance();
 		PositionWrapper<Token> advance_with(PositionWrapper<Token> tok);

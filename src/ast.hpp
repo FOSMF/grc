@@ -34,7 +34,7 @@ namespace GRC {
             }
             
             str += "\n\tBody:\n";
-
+            
             for (auto &node : this->body)  {
                 str += "\t\t" + node->to_string() + "\n";
             }
