@@ -5,8 +5,37 @@
 #include <iostream>
 
 #include "../log.hpp"
+#include "../utils.hpp"
 
 namespace GRC {
+
+    template<typename ...Args>
+    inline void SemanticAnalyser::error(Args &&...args) {
+        std::ostringstream omsg;
+
+        (omsg << ... << std::forward<Args>(args));
+
+        omsg << "\n    " << this->current_token.row << " | " << this->get_line(this->current_token.row) << std::endl
+             << "      | ";
+
+        size_t index = 0;
+        while (index < this->current_token.col - 1) {
+            omsg << " ";
+            index++;
+        }
+        for (size_t i = 0 ; i < this->current_token.unwrap().value.size() ; i++) {
+            if (i == 0) {
+                omsg << "^";
+            } else { omsg << "~"; }
+        }
+
+        this->do_exit = true;
+        LOG_ERROR("line: {0}:{1}: {2}", this->current_token.row, this->current_token.col, omsg.str());
+    }
+
+    std::vector<std::string> valid_keywords = {
+        "fn", "return"
+    };
 
     void SemanticAnalyser::advance() {
         this->current_token = this->tokenizer.fetch_token();
@@ -16,7 +45,7 @@ namespace GRC {
         switch (this->current_token.unwrap().type) {
         case IDENTIFIER: this->check_ident(); break;
         default: {
-                this->error("invalid keyword `", this->current_token.unwrap().value, "`");
+                this->error("invalid syntax `", this->current_token.unwrap().value, "`");
             } break;
         }
     }
@@ -71,13 +100,19 @@ namespace GRC {
             this->check_function();
         } else if (this->current_token.unwrap().value == "return") {
             this->advance();
-
+            
             this->advance();
             if (this->current_token.unwrap().type != SEMICOLON) {
                 this->error("expected ';' at the end of statement");
             }
         } else {
-            this->error("invalid keyword `", this->current_token.unwrap().value, "`");
+            std::string closest = Utils::find_closest_word(valid_keywords, this->current_token.unwrap().value);
+            if (closest.empty()) {
+                this->error("invalid keyword `", this->current_token.unwrap().value, "`");
+            } else {
+                this->error("invalid keyword `", this->current_token.unwrap().value, "`, did you mean `",
+                    Utils::find_closest_word(valid_keywords, this->current_token.unwrap().value), "`?");
+            }
         }
     }
 
@@ -98,25 +133,6 @@ namespace GRC {
         exit(1);
     }
 
-    template<typename ...Args>
-    inline void SemanticAnalyser::error(Args &&...args) {
-        std::ostringstream omsg;
-
-        (omsg << ... << std::forward<Args>(args));
-
-        omsg << "\n    " << this->current_token.row << " | " << this->get_line(this->current_token.row) << std::endl
-             << "      | ";
-
-        size_t index = 0;
-        while (index < this->current_token.col - 1) {
-            omsg << " ";
-            index++;
-        }
-        omsg << "^";
-
-        this->do_exit = true;
-        LOG_ERROR("line: {0}:{1}: {2}", this->current_token.row, this->current_token.col, omsg.str());
-    }
 
     void SemanticAnalyser::run_checks() {
         while (this->current_token.unwrap().type != END_OF_FILE) {
