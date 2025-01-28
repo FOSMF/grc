@@ -10,10 +10,11 @@ namespace GRC {
         this->current_token = this->tokenizer.fetch_token();
     }
     
-    void ParserSymbol::eat(enum TokenType type) {
-        if (this->current_token.value.type != type) {
-            LOG_ERROR("line: {0}:{1}: invalid token",
-                        this->current_token.row, this->current_token.col);
+    void ParserSymbol::eat(TokenType type) {
+        if (this->current_token.unwrap().type != type) {
+            LOG_ERROR("line: {0}:{1}: expected: {2}, found: {3}",
+                        this->current_token.row, this->current_token.col,
+                        ttype_to_str(type), ttype_to_str(this->current_token.unwrap().type));
             exit(1);
         }
 
@@ -21,20 +22,20 @@ namespace GRC {
     }
 
     void ParserSymbol::parse_functions() {
-        while (this->current_token.value.type != END_OF_FILE) {
-            if (this->current_token.value.type == IDENTIFIER
-                && this->current_token.value.value == "fn") {
-                this->eat(TokenType::IDENTIFIER);
+        while (this->current_token.unwrap().type != END_OF_FILE) {
+            if (this->current_token.unwrap().type == IDENTIFIER
+                && this->current_token.unwrap().value == "fn") {
+                this->eat(IDENTIFIER);
 
-                std::string name = this->current_token.value.value;
-                this->eat(TokenType::IDENTIFIER);
+                std::string name = this->current_token.unwrap().value;
+                this->eat(IDENTIFIER);
 
-                this->eat(TokenType::LPAREN);
+                this->eat(LPAREN);
                 // TODO: Add support for function arguments
-                this->eat(TokenType::RPAREN);
+                this->eat(RPAREN);
 
-                std::string type = this->current_token.value.value;
-                this->eat(TokenType::IDENTIFIER);
+                std::string type = this->current_token.unwrap().value;
+                this->eat(IDENTIFIER);
 
                 this->table.functions.insert({ name, Function(name, type) });
             } else {

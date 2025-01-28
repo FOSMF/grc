@@ -76,8 +76,9 @@ int main(int argc, char **argv) {
 		ParserSymbol symbol_parser(symbol_table, tokenizer);
 		symbol_parser.parse_functions();
 
-		for (auto &func : symbol_table.functions) {
-			std::cout << func.second.to_string() << std::endl;
+		ParserAST ast_parser(symbol_table, tokenizer);
+		for (auto &node : ast_parser.parse_ast()) {
+			std::cout << node->to_string() << std::endl;
 		}
 	}
 }

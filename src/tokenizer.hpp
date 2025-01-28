@@ -2,40 +2,58 @@
 
 #include <string>
 
-enum TokenType {
-	// Types
-	IDENTIFIER = 0,
-	NUMBER,
-
-	// Delimiters
-	LPAREN,
-	RPAREN,
-	LCURLY,
-	RCURLY,
-	SEMICOLON,
-
-	// Other
-	END_OF_FILE,
-};
-
-struct Token {
-	enum TokenType type;
-	std::string value;
-};
-
-// PositionWrapper is used mainly in error messages
-// as it provides easier access of the token's position
-template<typename T>
-struct PositionWrapper {
-	PositionWrapper(T val, size_t r, size_t c)
-		: value(val), row(r), col(c) {}
-public:
-	T value;
-	size_t row;
-	size_t col;
-};
-
 namespace GRC {
+
+	enum TokenType {
+		// Types
+		IDENTIFIER = 0,
+		NUMBER,
+
+		// Delimiters
+		LPAREN,
+		RPAREN,
+		LCURLY,
+		RCURLY,
+		SEMICOLON,
+
+		// Other
+		END_OF_FILE,
+	};
+
+	inline std::string ttype_to_str(TokenType type) {
+		switch (type) {
+			case IDENTIFIER: 	return "identifier";
+			case NUMBER: 		return "number";
+
+			case LPAREN: 		return "left parenthesis";
+			case RPAREN: 		return "right parenthesis";
+			case LCURLY:		return "left brace";
+			case RCURLY: 		return "right brace";
+			case SEMICOLON: 	return "semicolon";
+
+			case END_OF_FILE: 	return "EOF";
+		}
+	}
+
+	struct Token {
+		TokenType type;
+		std::string value;
+	};
+
+	// PositionWrapper is used mainly in error messages
+	// as it provides easier access of the token's position
+	template<typename T>
+	struct PositionWrapper {
+		PositionWrapper(T val, size_t r, size_t c)
+			: value(val), row(r), col(c) {}
+
+		inline T &unwrap() { return this->value; }
+	private:
+		T value;
+	public:
+		size_t row;
+		size_t col;
+	};
 
 	// The tokenizer organizes each piece of text in a file
 	// into a token if valid.

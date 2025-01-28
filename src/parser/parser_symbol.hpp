@@ -5,20 +5,21 @@
 
 namespace GRC {
 
+    // First parser pass through, meant getting function symbols.
     class ParserSymbol {
     public:
-        ParserSymbol(SymbolTable &table, Tokenizer &tokenizer)
-            : table(table), tokenizer(tokenizer), current_token(tokenizer.fetch_token()) {}
+        ParserSymbol(SymbolTable &table, Tokenizer tokenizer)
+            : table(table), tokenizer(tokenizer) {}
 
         void parse_functions();
     private:
         void careless_eat();
-        void eat(enum TokenType type);
+        void eat(TokenType type);
     private:
         SymbolTable &table;
 
-        Tokenizer &tokenizer;
-        PositionWrapper<Token> current_token;
+        Tokenizer tokenizer;
+        PositionWrapper<Token> current_token = this->tokenizer.fetch_token();
     };
 
 }

@@ -20,8 +20,10 @@ namespace GRC {
         NodeList params;
         NodeList body;
     public:
-        Function(const std::string &name, const std::string &type)
-            : name(name), type(type) {}
+        Function(const std::string &name, const std::string &type,
+                    NodeList params = std::vector<Node>(),
+                    NodeList body = std::vector<Node>())
+            : name(name), type(type), params(std::move(params)), body(std::move(body)) {}
 
         std::string to_string() const override {
             std::string str = "Function:\n\tName: " + this->name + "\n\tType: "
@@ -34,7 +36,7 @@ namespace GRC {
             str += "\n\tBody:\n";
 
             for (auto &node : this->body)  {
-                str += "\t" + node->to_string() + "\n";
+                str += "\t\t" + node->to_string() + "\n";
             }
 
             return str;
@@ -44,8 +46,22 @@ namespace GRC {
     struct Return : public ASTNode {
         Node value;
     public:
+        Return(Node value)
+            : value(std::move(value)) {}
+
         std::string to_string() const override {
             return "Return: " + this->value->to_string();
+        }
+    };
+
+    struct Number : public ASTNode {
+        std::string value;
+    public:
+        Number(const std::string &value)
+            : value(value) {}
+
+        std::string to_string() const override {
+            return "Number(" + this->value + ")"; 
         }
     };
 

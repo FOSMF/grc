@@ -85,7 +85,7 @@ namespace GRC {
 					}, this->row, this->col));
 				default:
 					{
-						LOG_ERROR("invalid token `{0}`", this->ch);
+						LOG_ERROR("line: {0}:{1}: invalid token `{2}`", this->row, this->col, this->ch);
 						exit(1);
 					} break;
 			}
