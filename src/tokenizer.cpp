@@ -56,6 +56,13 @@ namespace GRC {
 		if (this->index < this->source.size()) {
 			// Skips whitespace as they are not needed, this isn't python.
 			while (isspace(this->ch)) { this->advance(); }
+
+			if (this->index >= this->source.size()) {
+				return PositionWrapper<Token>({
+						.type = END_OF_FILE,
+						.value = "?",
+					}, this->row, this->col);
+			}
 			
 			// Some quick checks to see if we should lex it as ident or num.
 			if (isalpha(this->ch)) { return lex_ident(); }

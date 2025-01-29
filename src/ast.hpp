@@ -11,7 +11,7 @@ namespace GRC {
         virtual std::string to_string() const = 0;
     };
 
-    typedef std::unique_ptr<ASTNode> Node;
+    typedef std::shared_ptr<ASTNode> Node;
     typedef std::vector<Node> NodeList;
 
     struct Function : public ASTNode {
@@ -34,7 +34,7 @@ namespace GRC {
             }
             
             str += "\n\tBody:\n";
-            
+
             for (auto &node : this->body)  {
                 str += "\t\t" + node->to_string() + "\n";
             }
@@ -47,7 +47,7 @@ namespace GRC {
         Node value;
     public:
         Return(Node value)
-            : value(std::move(value)) {}
+            : value(value) {}
 
         std::string to_string() const override {
             return "Return: " + this->value->to_string();

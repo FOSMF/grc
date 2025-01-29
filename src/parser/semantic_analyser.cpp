@@ -14,9 +14,24 @@ namespace GRC {
         std::ostringstream omsg;
 
         (omsg << ... << std::forward<Args>(args));
+        omsg << "\n";
 
-        omsg << "\n    " << this->current_token.row << " | " << this->get_line(this->current_token.row) << std::endl
-             << "      | ";
+        size_t padding = 4;
+        for (size_t i = 0 ; i < std::to_string(this->current_token.row).size() ; i++) {
+            if (padding == 0) { break; }
+            padding--;
+        }
+
+        for (size_t i = 0 ; i <= padding ; i++) {
+            omsg << " ";
+        }
+
+        omsg << this->current_token.row << " | " << this->get_line(this->current_token.row) << std::endl;
+        
+        for (size_t i = 0 ; i <= padding + std::to_string(this->current_token.row).size() ; i++) {
+            omsg << " ";
+        }
+        omsg << " | ";
 
         size_t index = 0;
         while (index < this->current_token.col - 1) {
@@ -101,8 +116,12 @@ namespace GRC {
         } else if (this->current_token.unwrap().value == "return") {
             this->advance();
             
+            size_t col = this->current_token.col;
+            size_t row = this->current_token.row;
             this->advance();
             if (this->current_token.unwrap().type != SEMICOLON) {
+                this->current_token.row = row;
+                this->current_token.col = col + 1;
                 this->error("expected ';' at the end of statement");
             }
         } else {
@@ -129,8 +148,7 @@ namespace GRC {
             current_line++;
         }
 
-        LOG_ERROR("unexpected: failed to get line: {0}", num);
-        exit(1);
+        return "";
     }
 
 

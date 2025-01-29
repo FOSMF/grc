@@ -9,6 +9,7 @@
 #include "parser/parser_symbol.hpp"
 #include "parser/semantic_analyser.hpp"
 #include "parser/parser_ast.hpp"
+#include "parser/hir_codegen.hpp"
 
 using namespace GRC;
 
@@ -61,6 +62,8 @@ int main(int argc, char **argv) {
 				std::string out = shift(argc, &argv);
 			} else if (arg == "+assembly") {
 
+			} else if (arg == "+version") {
+				std::cout << "version: " << PROGRAM_VERSION << std::endl;
 			} else {
 				usage(program);
 				LOG_ERROR("invalid flag `{0}`", arg);
@@ -74,15 +77,23 @@ int main(int argc, char **argv) {
 	for (auto &file : files) {
 		Tokenizer tokenizer(get_file_contents(file));
 		SymbolTable symbol_table;
-		ParserSymbol symbol_parser(symbol_table, tokenizer);
-		symbol_parser.parse_functions();
-
+		
 		SemanticAnalyser analyser(symbol_table, tokenizer);
 		analyser.run_checks();
 
+		ParserSymbol symbol_parser(symbol_table, tokenizer);
+		symbol_parser.parse_functions();
+
 		ParserAST ast_parser(symbol_table, tokenizer);
-		for (auto &node : ast_parser.parse_ast()) {
+		NodeList ast = ast_parser.parse_ast();
+		for (auto &node : ast) {
 			std::cout << node->to_string() << std::endl;
+		}
+
+		HIRCodegen codegen(ast);
+		codegen.generate();
+		for (auto &expr : codegen.get_hir_code()) {
+			std::cout << expr->to_string() << std::endl;
 		}
 	}
 }

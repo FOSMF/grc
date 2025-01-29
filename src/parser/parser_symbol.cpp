@@ -25,6 +25,8 @@ namespace GRC {
         while (this->current_token.unwrap().type != END_OF_FILE) {
             if (this->current_token.unwrap().type == IDENTIFIER
                 && this->current_token.unwrap().value == "fn") {
+                size_t row = this->current_token.row;
+
                 this->eat(IDENTIFIER);
 
                 std::string name = this->current_token.unwrap().value;
@@ -37,7 +39,7 @@ namespace GRC {
                 std::string type = this->current_token.unwrap().value;
                 this->eat(IDENTIFIER);
 
-                this->table.functions.insert({ name, Function(name, type) });
+                this->table.functions.insert({ name, std::make_tuple(row, Function(name, type)) });
             } else {
                 this->careless_eat();
             }

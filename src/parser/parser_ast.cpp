@@ -42,14 +42,14 @@ namespace GRC {
             }
             this->eat(RCURLY);
 
-            return std::make_unique<Function>(Function(name, type, std::move(params), std::move(body)));
+            return std::make_shared<Function>(Function(name, type, params, body));
         } else if (this->current_token.unwrap().value == "return") {
             this->eat(IDENTIFIER);
 
             Node value = this->parse_expr();
             this->eat(SEMICOLON);
 
-            return std::make_unique<Return>(Return(std::move(value)));
+            return std::make_shared<Return>(Return(value));
         }
 
         LOG_ERROR("line: {0}:{1}: invalid keyword `{2}`",
@@ -65,7 +65,7 @@ namespace GRC {
                 std::string value = this->current_token.unwrap().value;
                 this->eat(NUMBER);
 
-                return std::make_unique<Number>(Number(value));
+                return std::make_shared<Number>(Number(value));
             };
         default: {
                 LOG_ERROR("line: {0}:{1}: invalid token type to parse: {2}",
