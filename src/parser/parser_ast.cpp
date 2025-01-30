@@ -21,6 +21,9 @@ namespace GRC {
 
     Node ParserAST::parse_ident() {
         if (this->current_token.unwrap().value == "fn") {
+            size_t row = this->current_token.row;
+            size_t col = this->current_token.col;
+
             this->eat(IDENTIFIER);
 
             std::string name = this->current_token.unwrap().value;
@@ -32,7 +35,11 @@ namespace GRC {
             this->eat(RPAREN);
 
             std::string type = this->current_token.unwrap().value;
+            
+            size_t end_col = this->current_token.col + this->current_token.unwrap().value.size();
+
             this->eat(IDENTIFIER);
+            
 
             this->eat(LCURLY);
             NodeList body;
@@ -42,14 +49,20 @@ namespace GRC {
             }
             this->eat(RCURLY);
 
-            return std::make_shared<Function>(Function(name, type, params, body));
+            return std::make_shared<Function>(Function(name, type, params, body, row, col, end_col));
         } else if (this->current_token.unwrap().value == "return") {
+            size_t row = this->current_token.row;
+            size_t col = this->current_token.col;
+
+            size_t end_col = this->current_token.col + this->current_token.unwrap().value.size();
             this->eat(IDENTIFIER);
+
 
             Node value = this->parse_expr();
             this->eat(SEMICOLON);
 
-            return std::make_shared<Return>(Return(value));
+
+            return std::make_shared<Return>(Return(value, row, col, end_col));
         }
 
         LOG_ERROR("line: {0}:{1}: invalid keyword `{2}`",
@@ -62,10 +75,15 @@ namespace GRC {
         switch (this->current_token.unwrap().type) {
         case IDENTIFIER: return parse_ident();
         case NUMBER: {
+                size_t row = this->current_token.row;
+                size_t col = this->current_token.col;
+
                 std::string value = this->current_token.unwrap().value;
                 this->eat(NUMBER);
 
-                return std::make_shared<Number>(Number(value));
+                size_t end_col = this->current_token.col;
+
+                return std::make_shared<Number>(Number(value, row, col, end_col));
             };
         default: {
                 LOG_ERROR("line: {0}:{1}: invalid token type to parse: {2}",

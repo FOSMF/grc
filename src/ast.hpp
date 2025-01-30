@@ -19,11 +19,17 @@ namespace GRC {
         std::string type;
         NodeList params;
         NodeList body;
+
+        size_t line;
+        size_t start_col;
+        size_t end_col;
     public:
         Function(const std::string &name, const std::string &type,
                     NodeList params = std::vector<Node>(),
-                    NodeList body = std::vector<Node>())
-            : name(name), type(type), params(std::move(params)), body(std::move(body)) {}
+                    NodeList body = std::vector<Node>(),
+                    size_t line = 0, size_t start_col = 0, size_t end_col = 0)
+            : name(name), type(type), params(std::move(params)), body(std::move(body)),
+                line(line), start_col(start_col), end_col(end_col) {}
 
         std::string to_string() const override {
             std::string str = "Function:\n\tName: " + this->name + "\n\tType: "
@@ -45,9 +51,13 @@ namespace GRC {
 
     struct Return : public ASTNode {
         Node value;
+
+        size_t line;
+        size_t start_col;
+        size_t end_col;
     public:
-        Return(Node value)
-            : value(value) {}
+        Return(Node value, size_t line = 0, size_t start_col = 0, size_t end_col = 0)
+            : value(value), line(line), start_col(start_col), end_col(end_col) {}
 
         std::string to_string() const override {
             return "Return: " + this->value->to_string();
@@ -56,9 +66,13 @@ namespace GRC {
 
     struct Number : public ASTNode {
         std::string value;
+
+        size_t line;
+        size_t start_col;
+        size_t end_col;
     public:
-        Number(const std::string &value)
-            : value(value) {}
+        Number(const std::string &value, size_t line = 0, size_t start_col = 0, size_t end_col = 0)
+            : value(value), line(line), start_col(start_col), end_col(end_col) {}
 
         std::string to_string() const override {
             return "Number(" + this->value + ")"; 

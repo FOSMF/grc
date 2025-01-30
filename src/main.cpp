@@ -10,6 +10,7 @@
 #include "parser/semantic_analyser.hpp"
 #include "parser/parser_ast.hpp"
 #include "parser/hir_codegen.hpp"
+#include "hir/semantic_analyser.hpp"
 
 using namespace GRC;
 
@@ -95,5 +96,8 @@ int main(int argc, char **argv) {
 		for (auto &expr : codegen.get_hir_code()) {
 			std::cout << expr->to_string() << std::endl;
 		}
+
+		HIR::SemanticAnalyser hir_analyser(symbol_table, tokenizer, codegen.get_hir_code());
+		hir_analyser.run_checks();
 	}
 }

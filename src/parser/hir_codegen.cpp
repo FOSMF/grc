@@ -27,7 +27,7 @@ namespace GRC {
         }
 
         return std::make_shared<HIR::Function>(HIR::Function(
-            function->name, function->type, params, body));
+            function->name, function->type, params, body, function->line, function->start_col, function->end_col));
     }
 
     HIR::Expr HIRCodegen::generate_return(Node &ret_node) {
@@ -35,7 +35,7 @@ namespace GRC {
 
         HIR::Expr value = this->generate_expr(ret->value);
 
-        return std::make_shared<HIR::Return>(HIR::Return(value));
+        return std::make_shared<HIR::Return>(HIR::Return(value, ret->line, ret->start_col, ret->end_col));
     }
 
     HIR::Expr HIRCodegen::generate_expr(Node &node) {
@@ -44,7 +44,7 @@ namespace GRC {
         } else if (dynamic_cast<Return*>(node.get())) {
             return this->generate_return(node);
         } else if (auto num = dynamic_cast<Number*>(node.get())) {
-            return std::make_shared<HIR::NumberSigned>(HIR::NumberSigned(std::stoi(num->value)));
+            return std::make_shared<HIR::NumberSigned>(std::stoi(num->value), num->line, num->start_col, num->end_col);
         }
 
         LOG_ERROR("unreachable, welp you have messed up big time.");
