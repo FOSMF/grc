@@ -18,34 +18,32 @@ namespace HIR {
 
         MIR::ExprList params;
         for (auto param : function->params) {
-            params.push_back(this->generate_expr(param, function->type));
+            params.push_back(this->generate_expr_no_blocks(param, function->type));
         }
 
         std::vector<MIR::Block> blocks;
-        MIR::ExprList body;
+
+        blocks.push_back(MIR::Block("entry"));
         for (auto expr : function->body) {
-            body.push_back(this->generate_expr(expr, function->type));
+            blocks[blocks.size() - 1].body.push_back(this->generate_expr(expr, function->type, blocks));
         }
 
-        blocks.push_back(MIR::Block("entry", body, function->line, function->start_col, function->end_col));
 
         return std::make_shared<MIR::Function>(MIR::Function(
             function->name, function->type, params, blocks, function->line, function->start_col, function->end_col));
     }
 
-    MIR::Expr MIRCodegen::generate_return(const std::string &type, Expr &ret_expr) {
+    MIR::Expr MIRCodegen::generate_return(const std::string &type, Expr &ret_expr, std::vector<MIR::Block> &blocks) {
         auto ret = dynamic_cast<Return*>(ret_expr.get());
 
-        MIR::Expr value = this->generate_expr(ret->value, type);
+        MIR::Expr value = this->generate_expr(ret->value, type, blocks);
 
         return std::make_shared<MIR::Return>(MIR::Return(type, value, ret->line, ret->start_col, ret->end_col));
     }
 
-    MIR::Expr MIRCodegen::generate_expr(Expr &expr, const std::string &type) {
-        if (dynamic_cast<Function*>(expr.get())) {
-            return this->generate_function(expr);
-        } else if (dynamic_cast<Return*>(expr.get())) {
-            return this->generate_return(type, expr);
+    MIR::Expr MIRCodegen::generate_expr(Expr &expr, const std::string &type, std::vector<MIR::Block> &blocks) {
+        if (dynamic_cast<Return*>(expr.get())) {
+            return this->generate_return(type, expr, blocks);
         } else if (auto num = dynamic_cast<NumberSigned*>(expr.get())) {
             return std::make_shared<MIR::NumberSigned>(num->value, num->line, num->start_col, num->end_col);
         } else if (auto num = dynamic_cast<NumberUnsigned*>(expr.get())) {
@@ -56,9 +54,18 @@ namespace HIR {
         exit(1);
     }
 
+    MIR::Expr MIRCodegen::generate_expr_no_blocks(Expr &expr, const std::string &type) {
+        if (dynamic_cast<Function*>(expr.get())) {
+            return this->generate_function(expr);
+        }
+
+        LOG_ERROR("unreachable, welp you have messed up big time.");
+        exit(1);
+    }
+
     void MIRCodegen::generate() {
         while (this->index < this->hir_code.size()) {
-            this->mir_code.push_back(this->generate_expr(this->current_expr, "undefined"));
+            this->mir_code.push_back(this->generate_expr_no_blocks(this->current_expr, "undefined"));
             this->advance();
         }
     }

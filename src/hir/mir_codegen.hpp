@@ -14,10 +14,11 @@ namespace HIR {
     public:
         MIR::ExprList &get_mir_code() { return this->mir_code; }
     private:
-        MIR::Expr generate_expr(Expr &expr, const std::string &type);
+        MIR::Expr generate_expr_no_blocks(Expr &expr, const std::string &type);
+        MIR::Expr generate_expr(Expr &expr, const std::string &type, std::vector<MIR::Block> &blocks);
 
         MIR::Expr generate_function(Expr &func_expr);
-        MIR::Expr generate_return(const std::string &type, Expr &ret_expr);
+        MIR::Expr generate_return(const std::string &type, Expr &ret_expr, std::vector<MIR::Block> &blocks);
         
         void advance();
     private:

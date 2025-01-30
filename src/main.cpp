@@ -12,6 +12,7 @@
 #include "parser/hir_codegen.hpp"
 #include "hir/semantic_analyser.hpp"
 #include "hir/mir_codegen.hpp"
+#include "mir/optimizations.hpp"
 
 using namespace GRC;
 
@@ -103,6 +104,8 @@ int main(int argc, char **argv) {
 
 		HIR::MIRCodegen mir_codegen(hir_codegen.get_hir_code());
 		mir_codegen.generate();
+		MIR::MIROptimizations mir_optimizations(mir_codegen.get_mir_code());
+		mir_optimizations.remove_unused();
 		for (auto &expr : mir_codegen.get_mir_code()) {
 			std::cout << expr->to_string() << std::endl;
 		}

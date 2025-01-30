@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(grc)
-set(PROGRAM_VERSION "nightly-dev-2025.01.30-patch-1")
+set(PROGRAM_VERSION "nightly-dev-2025.01.30-patch-2")
 add_definitions(-DPROGRAM_VERSION="${PROGRAM_VERSION}")
 
 set(CMAKE_CXX_STANDARD 20)

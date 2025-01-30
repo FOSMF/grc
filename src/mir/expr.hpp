@@ -20,13 +20,9 @@ namespace MIR {
     struct Block {
         std::string name;
         ExprList body;
-
-        size_t line;
-        size_t start_col;
-        size_t end_col;
     public:
-        Block(const std::string &name, ExprList body = std::vector<Expr>(), size_t line = 0, size_t start_col = 0, size_t end_col = 0)
-            : name(name), body(body), line(line), start_col(start_col), end_col(end_col) {}
+        Block(const std::string &name, ExprList body = std::vector<Expr>())
+            : name(name), body(body) {}
 
         std::string to_string() const {
             std::string str = "Block: " + this->name + " {\n";
