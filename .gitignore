@@ -1,6 +1,6 @@
 .vscode/
 
-build/
+bin/
 
 **.vcxproj
 **.vcxproj.filters

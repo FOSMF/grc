@@ -13,6 +13,7 @@
 #include "hir/semantic_analyser.hpp"
 #include "hir/mir_codegen.hpp"
 #include "mir/optimizations.hpp"
+#include "mir/llvm_codegen.hpp"
 
 using namespace GRC;
 
@@ -89,16 +90,10 @@ int main(int argc, char **argv) {
 
 		ParserAST ast_parser(symbol_table, tokenizer);
 		NodeList ast = ast_parser.parse_ast();
-		for (auto &node : ast) {
-			std::cout << node->to_string() << std::endl;
-		}
 
 		HIRCodegen hir_codegen(ast);
 		hir_codegen.generate();
-		for (auto &expr : hir_codegen.get_hir_code()) {
-			std::cout << expr->to_string() << std::endl;
-		}
-
+		
 		HIR::SemanticAnalyser hir_analyser(symbol_table, tokenizer, hir_codegen.get_hir_code());
 		hir_analyser.run_checks();
 
@@ -106,8 +101,8 @@ int main(int argc, char **argv) {
 		mir_codegen.generate();
 		MIR::MIROptimizations mir_optimizations(mir_codegen.get_mir_code());
 		mir_optimizations.remove_unused();
-		for (auto &expr : mir_codegen.get_mir_code()) {
-			std::cout << expr->to_string() << std::endl;
-		}
+
+		MIR::LLVMCodegen mir_llvm_codegen(file, mir_codegen.get_mir_code());
+		mir_llvm_codegen.generate_ir();
 	}
 }

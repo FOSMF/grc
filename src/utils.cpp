@@ -15,11 +15,10 @@ namespace GRC {
             for (int j = 1; j <= len2; j++) {
                 int cost = (w1[i - 1] == w2[j - 1]) ? 0 : 1;
 
-                dp[i][j] = std::min({
-                    dp[i - 1][j] + 1,
-                    dp[i][j - 1] + 1,
+                dp[i][j] = std::min(
+                    std::min(dp[i - 1][j] + 1, dp[i][j - 1] + 1),
                     dp[i - 1][j - 1] + cost
-                });
+                );           
 
                 if (i > 1 && j > 1 && w1[i - 1] == w2[j - 2] && w1[i - 2] == w2[j - 1]) {
                     dp[i][j] = std::min(dp[i][j], dp[i - 2][j - 2] + cost);
@@ -38,7 +37,7 @@ namespace GRC {
     }
 
     std::string Utils::find_closest_word(const std::vector<std::string> &words, const std::string &word) {
-        int minDistance = std::numeric_limits<int>::max();
+        int minDistance = INT32_MAX;
         std::string closest_word;
 
         for (const std::string &key : words) {
